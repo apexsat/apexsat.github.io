@@ -1,0 +1,3 @@
+[submodule "apexsat"]
+	path = apexsat
+	url = https://github.com/apexsat/apexsat
