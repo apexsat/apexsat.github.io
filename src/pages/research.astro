@@ -1,0 +1,155 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts'))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<BaseLayout title="Terminal">
+  <div class="index-content framed">
+    <h1 id="hello-there">Research</h1>
+  </div>
+  <div style="white-space: pre-line;">
+    <div class="index-content framed">
+
+      Introduction
+
+      Though not as widely used on CubeSats, a large amount of smallsat utilize a propulsion system for reasons such as orbit raising, collision avoidance, and end-of-life disposal. The flexibility offered allows for spacecraft to not be limited to the orbit a launch vehicle can provide. 
+
+      When selecting a propulsion system for a mission, one important choice often made is between utilizing a chemical propulsion system or an electric propulsion system. Chemical propulsion systems release the chemical energy of their propellants through chemical reactions to generate relatively high amounts of thrust but at a low specific impulse. 
+
+      On the other hand, electric propulsion systems use an external source of electrical power to accelerate their propellant to much higher exhaust velocities than chemical propulsion, thus attaining a higher specific impulse, but at the cost of significantly lower thrust. Each of these types of systems has its uses, with chemical being good at performing maneuvers quickly, and electric propulsion being able to perform much higher Δv maneuvers with a similar mass of propellant, but at the cost of taking much more time to do so.
+
+      <img src="/DualModePropulsionConcepts.png" alt="" width="auto"/>
+      Figure 1: Dual-mode propulsion concepts
+
+      One solution that allows for the best of both worlds, is a dual-mode propulsion system. This concept combines the high thrust of a chemical system and the high specific impulse of an electric system by employing both kinds of thrusters fed by a common propellant tank. Using this, mission planners no longer must compromise as much on the maneuvers that can be performed during a mission.
+
+      The APEx mission will verify the performance of a novel pulsed magnetoplasmadynamic (PMPD) thruster in space. APEx is designed around a purely electric propulsion system, but this system is well suited to be integrated into a dual mode propulsion system in the future, mainly due to its use of
+      a liquid chemical monopropellant called ASCENT. 
+
+      ASCENT is an alternative to hydrazine designed by the AFRL to have reduced toxicity, higher specific impulse as a chemical propellant, and a low vapor pressure. This allows for the use of a porous fritted glass disk for passive propellant injection via capillary action. It holds ASCENT in a thin layer on the surface to be vaporized during a discharge of the thruster. This avoids the late-discharge vaporization problems of solid propellants, and the injection valve timing issues present with gaseous propellants. 
+
+      <img src="/PMPDThrusterCutawayView.png" alt="" width="auto"/>
+      Figure 2: PMPD thruster cutaway view
+
+      Another major design feature of the PMPD thruster is its coaxial thruster geometry which allows for reduced discharge voltages when compared to rail based Pulsed Plasma Thrusters (PPTs), which leads to a smaller and more efficient power processing unit. This resembles the geometry of magnetoplasmadynamic (MPD) thrusters and is where our thruster’s name is derived from.
+    
+      <img src="/PMPDThrusterAndPropellantSystem.png" alt="" width="auto"/>
+      Figure 3: PMPD thruster and propellant system
+
+    </div>
+    <div class="index-content framed">
+      Mission Objectives
+
+      MO.1
+      Operate the PMPD propulsion system in LEO to execute an orbit-raising or lowering maneuver.
+
+      MO.2
+      Determine the key performance metrics of the PMPD system in LEO including impulse bit, specific impulse, and total efficiency of power to thrust conversion.
+
+      MO.3
+      Continuously record the propulsion system health metrics during thruster operation including average power consumption, propellant injector temperature, propellant tank level, and current/voltage waveforms for the discharge and igniter circuits.
+
+      Overall CONOPS and Experiment Plan
+
+      FE.1 (1.5 hours)
+      Thruster checkouts
+      * Fire single prograde pulse
+      * Measure thruster health metrics (voltage and current waveforms)
+      * Downlink results + wait to proceed
+
+      FE.2 (24 hours)
+      Short-duration performance characterization
+      <ul>
+        <li>Repeatedly pulse thruster and coast to recharge</li>
+        <li>Gather data to allow for performance metrics (impulse bit, specific impulse, total efficiency)</li>
+      </ul>
+
+      FE.3 (1-2 months)
+      Long-duration performance characterization
+      * Pulse 1 million times, in repeated orbit raising and lowering maneuvers
+      * Stop periodically for systems check, data downlink, and orbit characterization
+      * Collect health and performance metrics to reduce uncertainty for performance parameters and monitor the change in thruster behavior over its lifetime.
+
+      <img src="/OverallMissionCONOPS.png" alt="" width="auto"/>
+      Figure 4: Overall Mission CONOPS
+
+    </div>
+    <div class="index-content framed">
+      Mission Modes
+
+      Deployment/Setup
+      * Power on immediately once separating from launch vehicle
+      * Wait 30 minutes using internal timer after deployment for antenna deployment
+      * Attempt beaconing a small data packet after 45 minutes, repeating once every 6 minutes
+      * Detumble until reaching angular velocity under 1 deg/s followed by complete rotations on all axes to complete ADCS test
+      * Enter standby mode
+
+      Standby
+      * Actively point solar panels towards sun
+      * Transmit data for 1 minute every 10 minutes on incident power generation and battery level
+      * Log system telemetry every minute to onboard memory
+      * Change mode after command from ground
+
+      Downlink
+      * Occurs approximately once a month when data logs are approaching full
+      * After ground command, transmit when above Purdue’s ground station
+      * After packets are acknowledged from ground, data is removed from satellite storage
+      * Process is estimated to take roughly 3 days
+      * Return to Standby when complete
+
+      Safe Mode
+      * Triggered by passing below 42% battery charge, or if software errors are detected
+      * Satellite transmits packet to ground indicating critical condition before entering safe mode
+      * Satellite stops regular beacon packets and disables ADCS system to conserve power
+      * Once above 48% power, satellite will wait for ground command to exit safe mode
+
+      End of Life
+      * Spacecraft enters end of life on receiving command from ground station
+      * Spacecraft passivated by placing batteries in fully discharged state
+      * Satellite shuts down all systems and passively deorbits into Earth’s atmosphere
+    </div>
+    <div class="index-content framed">
+      CubeSat Design
+
+      The APEx mission satellite is still in the early stages of design and only rough layouts of the spacecraft have been created. A more complete CAD model is in development currently but is still pending certain design decisions. It will consist of a 6U satellite bus with the PMPD payload mounted to direct thrust through the spacecraft’s center of mass. This system, with the thruster and its propellant system is currently estimated to require 2U of volume. A GPS patch antenna will provide position telemetry for determining the impulse bit of the thruster, voltage and current sensors in the thruster power supply will monitor thruster power usage, and a combination of a microflow meter and thermal propellant gauging technique are planned to collect propellant data. A 6U fixed solar array will provide power with an 80 W*hr. battery for storage, and four deployable UHF turnstile antennas will provide a link to the Purdue ground station.
+
+      <p>
+      <img src="/PreliminarySpacecraftGeometry.png" alt="" width="auto"/>
+      Figure 5: Preliminary spacecraft geometry
+      </p>
+
+      Preliminary budgets have been established for many of the subsystems, with these being adjusted as decisions about the spacecraft are made. A current estimate for mass and volume has the CubeSat using 9.75 kg out of the 12 maximum allowable mass, and 467.26 mm of stack height out of 600 mm total leaving ample room for growth as the design matures. For our power system, many different scenarios have been considered, but of note is the estimate for power during a maneuver when the satellite is tracking prograde. Based on a thruster power draw of 10 W and a solar panel power generation of 18 W, an average power consumption of 28.979 W and
+      an average power generation of 11.46 W have been determined. The spacecraft link budget utilizing 2 watts of transmission power provides an estimated downlink margin of 8.7 dB and an uplink margin of 36 dB, which are both larger than our required link margin of 6 dB. Based on the data products being generated, 747 kb/orbit is expected during the experiment, requiring during downlink phases a rate of 3600 kb/orbit, leaving 16.75 MB out of the planned 32 MB being used.
+
+      Future Work and Schedule
+
+      The APEx team is currently performing system architecture trade studies and selecting components, moving towards a more complete overall design of the satellite. Current challenges include selecting a propellant flow meter and tank gauging system, designing a power and control board for the PMPD thruster, and defining thermal operating environments and control methods. The thruster prototype is still undergoing geometry optimization and propellant feed system design.
+
+      Future Timeline
+
+      Program Management Review, August 2025
+      * Discussion of overall satellite design.
+
+      Preliminary Design Review, November 2025
+      * Have early versions of avionics and software undergoing testing.
+      * Detailed spacecraft design concepts ready.
+      * Major subsystem components selected.
+
+      Critical Design Review, November 2026
+      * All subsystems will each have analyses complete if applicable
+      * Subsystem hardware and software will be undergoing verification and testing
+
+      Flight Selection Review, January 2027
+      * Subsystem prototype hardware ready to present
+      * Engineering model complete
+
+      Launch, Q2 2029
+      * If selected after FSR, spacecraft is expected to be prepared for launch
+    </div>
+  </div>
+</BaseLayout>
