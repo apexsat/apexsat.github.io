@@ -6,7 +6,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://apexsat.space',
   // Only use base path in production (GitHub Pages)
-  base: process.env.NODE_ENV === 'production' ? '/astro-theme-terminal' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/' : '/',
   integrations: [sitemap()],
   markdown: {
     shikiConfig: {
